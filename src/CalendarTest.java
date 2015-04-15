@@ -9,6 +9,8 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -49,6 +51,7 @@ public class CalendarTest {
 					Date end = date;
 					end.setHours(event.getDateEnd().getValue().getHours());
 					end.setMinutes(event.getDateEnd().getValue().getMinutes());
+					event.getRecurrenceId();
 					event1.setDateEnd(end);
 					event1.setSummary(event.getSummary());
 					event1.setLocation(event.getLocation());
@@ -67,12 +70,20 @@ public class CalendarTest {
 				return event1.getDateStart().getValue().compareTo(event2.getDateStart().getValue());
 			}
 		});
-		for (VEvent event : events) {
-			System.out.println(event.getSummary().getValue());
-			//System.out.println(event.getLocation().getValue());
-			System.out.println(event.getDateStart().getValue());
-			System.out.println(event.getDateEnd().getValue());
-			System.out.println();
+		JSONArray jsonArray = new JSONArray();
+		for (VEvent vEvent : events) {
+			JSONObject event = new JSONObject();
+			event.put("summary", vEvent.getSummary().getValue());
+			if(vEvent.getLocation() != null){
+				event.put("location",vEvent.getLocation().getValue());
+			}
+			event.put("start",vEvent.getDateStart().getValue().toString());
+			event.put("end", vEvent.getDateEnd().getValue().toString());
+			event.put("owner", "Bob");
+			jsonArray.add(event);
 		}
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("events",jsonArray);
+		System.out.println(jsonObject);
 	}
 }
